@@ -1,0 +1,48 @@
+
+ <script>
+	$(
+		function() 
+		{
+			$( document ).tooltip();
+			$('input')[0].focus();
+		}
+	);
+</script>
+
+<div style="display: table;" class="bar">
+	<div style="margin-left:40px; margin-top:5px; float:left">
+		<a href="/" >
+			<img src="/imgs/logo.png">
+		</a>
+	</div>
+	<div style="float:left; margin-left: 50px">
+		<a href="https://github.com/" target="_blank" title="Vist Github">
+			<img src="/imgs/github.png" style="width:50px;">
+		</a>
+	</div>
+	<div style="float:left; margin-top:5px;" >
+		<a href="http://nodejs.org/" target="_blank" title="Vist Node.js">
+			<img src="/imgs/nodejs.png" style="width:40px;">
+		</a>
+	</div>
+	<div style="float:left; margin-top:5px;">
+		<a href="http://www.mongodb.org/" target="_blank" title="Vist MongoDB">
+			<img src="/imgs/mongodb.png" style="width:40px;">
+		</a>
+	</div>
+	<div style="float:left; margin-top:5px;">
+		<a href="http://jquery.com/" target="_blank" title="Vist jQuery">
+			<img src="/imgs/jquery.png" style="width:40px;">
+		</a>
+	</div>
+	<div style="float:left; margin-top:5px;">
+		<a href="http://jqueryui.com/" target="_blank" title="Vist jQuery-UI">
+			<img src="/imgs/jquery-ui.png" style="width:40px;">
+		</a>
+	</div>
+	<div style="float:right; margin-top:35px;">
+		<a href="https://github.com/caesar666" target="_blank" title="Visit me in Github">
+			Created by Kaiser Voginski.		
+		</a>
+	</div>
+</div>

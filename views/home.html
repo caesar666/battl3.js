@@ -1,0 +1,59 @@
+<% include header.html %>
+<body onload="javascript: reCalc('str','vit','wis','points');logoutForm();">
+	<% include bar.html %>
+	<form action="/toSave" id="home">
+		<div id="manual" title="Game Manual" >
+			aaa
+		</div>
+
+		<div style="display: table;">
+			<div id="containerSide">
+				<br />
+					<label style="float:center;">Name:</label>	<br />
+					<input type="name" name="name" value="<%= account.name  %>" onchange="checkName(this);"/><br />
+					<input type="name" name="nameHidden" id="nameHidden" value="<%= account.name  %>" style="display: none;"/>
+
+					<div>
+						<img id="nameOK" src='imgs/icon_ok.png' style="margin-right:20px;float:right; display:none;">
+						<img id="nameWarn" src='imgs/icon_warn.png' style="margin-right:20px;float:right; display:none;">
+						<label id="nameMsg"></label>
+					</div>
+					<br/>
+					<label>Str:</label>	<br />
+					<input type="name" name="str" id="str" value="<%= account.str %>" onkeyup="javascript: reCalc('str','vit','wis','points');" /> <br />
+			
+					<label>Vit:</label>	<br />
+					<input type="name" name="vit" id="vit" value="<%= account.vit %>" onkeyup="javascript: reCalc('str','vit','wis','points');" /> <br />
+
+					<label>Wis:</label>	<br />
+					<input type="name" name="wis" id="wis" value="<%= account.wis %>" onkeyup="javascript: reCalc('str','vit','wis','points');" /> <br />
+
+					<div style="float: right; padding-right: 20px;">
+						<label>Points: </label><input id="points" value="<%= account.points%>" disabled="true" /><br />
+						<a href="#" onclick="javascript: manualOpen();">Game Manual</a>
+					</div>
+					
+			</div>
+			<div id="containerSide">
+					<label>Battl3 Function:</label>
+					<br />
+					<textarea id="func" name="func" rows="20" cols="40"><%= account.func %></textarea> <br />
+
+					<label>My Battl3 URL(Share to people battl3 you!): </label> <br />
+					<label style="color: blue;">localhost:8081/battl3/<%= account._id %>
+			</div>
+		</div>
+		<div style="float: left; margin-left: 20px;">
+			<input type="submit" value="Save">
+			<input type="submit" id="logout" value="Logout">
+		</div>
+
+	<% if(dialog) {%>
+		<div id=dialog" title="<%= dialog.title %>" class="dialog">
+			<p><%= dialog.msg %></p>
+		</div>
+	<% } %>
+	</form>
+</body>
+<% include footer.html %>
+

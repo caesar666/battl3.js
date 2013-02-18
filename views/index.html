@@ -1,0 +1,10 @@
+<% include header.html %>
+
+<strong>Dethklok Band Messages</strong>
+<ul>
+  <% messages.forEach(function(msgObj){ %>
+    <li><%= msgObj.name %> <br/>	says: <%= msgObj.message %></li>
+  <% }) %>
+</ul>
+
+<% include footer.html %>

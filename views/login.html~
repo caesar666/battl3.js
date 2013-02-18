@@ -1,0 +1,26 @@
+<% include header.html %>
+
+	
+	<div id="container">
+		<form action="/toLogin" method="POST">
+
+			<label for="name">User</label>
+			<input type="name" name="user">
+
+			<label for="username">Password</label>
+			<input type="password" name="pass">
+			
+			<% if (error) { %>
+				<label class="error" id="error"> <%= error %></label>
+			<% }%>
+			<a href="/register">Register</a>
+			
+			<div id="lower">
+				<input type="submit" value="Login">
+			</div>
+		</form>
+	</div>
+
+
+<% include footer.html %>
+

@@ -1,0 +1,40 @@
+<% include header.html %>
+<% include bar.html %>
+<body onload="javascript: loadResult();">
+	<div style="display: table; width:100%;">
+		<div id="containerSide" style="height: auto;width:40%;padding-bottom:30px;" >
+			<label>Name: <%= result.player.name %></label><br/>
+			<label>HP: <%= result.player.hp %></label><br/>
+			<label>MP: <%= result.player.mp %></label><br/>
+			
+			<% if (result.player.name == result.won) { %>
+				<h2>Won</h2>
+			<% }else{ %>
+				<h2>Lose</h2>
+			<% }%>
+		</div>
+		<div id="containerSide" style="height: auto;width:40%;padding-bottom:30px;float:right;" >
+			<label>Name: <%= result.enemy.name %></label><br/>
+			<label>HP: <%= result.enemy.hp %></label><br/>
+			<label>MP: <%= result.enemy.mp %></label><br/>
+			
+			<% if (result.enemy.name == result.won) { %>
+				<h2>Won</h2>
+			<% }else{ %>
+				<h2>Lose</h2>
+			<% }%>
+		</div>
+	</div>
+	<div style="overflow: auto; height:50%; width:98%; margin-top:50px;" id="containerSide">
+			<% result.msgs.forEach(function(msg){ %>
+				<%= msg %></br></br>
+  			<% }) %>
+	</div>
+	<div style="float: left; margin-left: 20px;">
+		<input id="home" type="submit" value="Home" onclick="javascript: getElementById('goHome').click()"><br/>
+	</div>
+	<a href="/" id="goHome">
+</body>
+
+<% include footer.html %>
+

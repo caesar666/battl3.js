@@ -1,0 +1,53 @@
+<% include header.html %>
+<body onload="javascript: applyBattleStyles();">
+	<form action="/toBattl3" id="battl3" method="POST">
+		<input id="enemyid" name="enemyid" type="name" value="<%= enemy._id%>" style="display: none;">
+		<div style="display: table;">
+			<div id="containerSide">
+				<br />
+					<label style="float:center;">Name:</label>	<br />
+					<input type="name" name="name" value="<%= self.name  %>"/><br />
+		
+					<label>Str:</label>	<br />
+					<input disabled="true" type="name" name="str" id="str" value="<%= self.str %>" onkeyup="javascript: reCalc('str','vit','wis','points');" /> <br />
+			
+					<label>Vit:</label>	<br />
+					<input disabled="true" type="name" name="vit" id="vit" value="<%= self.vit %>" onkeyup="javascript: reCalc('str','vit','wis','points');" /> <br />
+
+					<label>Wis:</label>	<br />
+					<input disabled="true" type="name" name="wis" id="wis" value="<%= self.wis %>" onkeyup="javascript: reCalc('str','vit','wis','points');" /> <br />
+
+					<a href="#" id="selfFuncButton" type="submit" style="float: right; margin-right:20px; ">View Function</a>
+			</div>
+			
+			<div style="float: left;margin-top: 30%"; position: relative;">
+				VS
+			</div>
+			<div id="containerSide">
+				<br />
+					<label style="float:center;">Name:</label>	<br />
+					<input type="name" name="name" value="<%= enemy.name  %>"/><br />
+		
+					<label>Str:</label>	<br />
+					<input disabled="true" type="name" name="str" id="str" value="<%= enemy.str %>" onkeyup="javascript: reCalc('str','vit','wis','points');" /> <br />
+			
+					<label>Vit:</label>	<br />
+					<input disabled="true" type="name" name="vit" id="vit" value="<%= enemy.vit %>" onkeyup="javascript: reCalc('str','vit','wis','points');" /> <br />
+
+					<label>Wis:</label>	<br />
+					<input disabled="true" type="name" name="wis" id="wis" value="<%= enemy.wis %>" onkeyup="javascript: reCalc('str','vit','wis','points');" /> <br />
+			</div>
+		</div>
+	
+		<div style="float: left; margin-left: 20px;">
+			<input id="battleInput" type="submit" value="Battl3 !!"><br/>
+			<a href="/" style="padding-top:50px;">Run away to home</a>
+		</div>
+	</form>
+
+	<div id="selfFunc" title="Self Function" class="dialog">
+		<pre id="jsCode" class="js"><code><%= self.func%></code></pre>
+	</div>
+</body>
+<% include footer.html %>
+

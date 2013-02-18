@@ -1,0 +1,30 @@
+<% include header.html %>
+
+	<% include bar.html %>
+	<div id="container">
+		<form action="toRegister" method="POST">
+
+			<label for="name">User</label>
+			<input type="name" name="user">
+
+			<label for="email">Email</label>
+			<input type="name" name="email">
+
+			<label for="username">Password</label>
+			<input type="password" name="password">
+
+			<label for="username">Re-Password</label>
+			<input type="password" name="repassword">
+
+			<a href="/">Cancel</a>
+
+			<div id="lower">
+				<input type="submit" value="Register">
+
+			</div>
+		</form>
+	</div>
+
+
+<% include footer.html %>
+
