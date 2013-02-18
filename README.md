@@ -3,16 +3,16 @@ battl3.js
 
 A algorithm battl3 based on javascript for developers.
 
-Setup Project on your computer (Linux links)
+Setup Project on your computer 
 =========
 
 Projects dependencies
-	* Node.js
-		* Express
-		* EJS
-		* Mongojs
-	* Mondodb
-	* git
+	 Node.js
+		 Express (node.js lib)
+		 EJS (node.js lib)
+		 Mongojs (node.js lib)
+	 Mondodb
+	 git
 
 
 The collections on Mongodb are created automatically.
