@@ -1,9 +1,9 @@
 <% include header.html %>
-<body onload="javascript: reCalc('str','vit','wis','points');logoutForm();">
+<body onload="javascript: reCalc('str','vit','wis','points'); onloadHome();">
 	<% include bar.html %>
 	<form action="/toSave" id="home">
 		<div id="manual" title="Game Manual" >
-			aaa
+			manual
 		</div>
 
 		<div style="display: table;">
@@ -35,12 +35,31 @@
 					
 			</div>
 			<div id="containerSide">
-					<label>Battl3 Function:</label>
+					<label>Battl3 Algorithm:</label>
 					<br />
 					<textarea id="func" name="func" rows="20" cols="40"><%= account.func %></textarea> <br />
 
 					<label>My Battl3 URL(Share to people battl3 you!): </label> <br />
-					<label style="color: blue;">localhost:8081/battl3/<%= account._id %>
+					<input id="idhidden" type="hidden" value='<%= account._id %>' />
+					<label style="color: blue;" id="url" ></label>
+			</div>
+			<div id="containerSide">
+				<div style="margin-top: 20px;">
+					Your lasts battl3s
+				</div>
+				<% for(var i=0; i < myBattles.length; i++) { var battle = myBattles[i]; %>
+					<div style="margin-top: 20px;">
+						<a href="/hist/<%= battle._id %>">Watch > <%= battle.player.name %> VS. <%= battle.enemy.name %></a>
+					</div>
+				<% } %>
+				<div style="margin-top: 50%;">
+					<br/>Lasts World battl3s
+				</div>
+				<% if(worldBattles) for(var i=0; i < worldBattles.length; i++) { var battle = worldBattles[i]; %>
+					<div style="margin-top: 20px;">
+						<a href="/hist/<%= battle._id %>">Watch > <%= battle.player.name %> VS. <%= battle.enemy.name %></a>
+					</div>
+				<% } %>
 			</div>
 		</div>
 		<div style="float: left; margin-left: 20px;">
@@ -49,11 +68,31 @@
 		</div>
 
 	<% if(dialog) {%>
-		<div id=dialog" title="<%= dialog.title %>" class="dialog">
+		<div id="dialog" title="<%= dialog.title %>" class="dialog">
 			<p><%= dialog.msg %></p>
 		</div>
 	<% } %>
 	</form>
+	
+	<!-- donation -->
+	<div class="donation">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="4NS3GW7FAK8ZQ">
+			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+			<img alt="" border="0" src="https://www.paypalobjects.com/pt_BR/i/scr/pixel.gif" width="1" height="1">
+		</form>
+	</div>
+	
+	<div class="balloon">
+		<div class="arrow"></div>
+		<label style="color:blue;">Make your donation!</label><br/><br/>
+		If we ARRECADAR 100 BRL, I'll implement <br/>
+			3 new items;<br/>
+			3 classes (warrior, wizard, thief);<br/>
+			implement equipament feature;<br/>
+			<br/>
+	</div>
 </body>
 <% include footer.html %>
 

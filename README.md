@@ -7,12 +7,12 @@ Setup Project on your computer
 =========
 
 Projects dependencies
-	 Node.js
-		 Express (node.js lib)
-		 EJS (node.js lib)
-		 Mongojs (node.js lib)
-	 Mondodb
-	 git
+	 * Node.js
+		 ** Express (node.js lib)
+		 ** EJS (node.js lib)
+		 ** Mongojs (node.js lib)
+	 * Mongodb
+	 * git
 
 
 The collections on Mongodb are created automatically.

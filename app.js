@@ -21,7 +21,6 @@ if (!module.parent) {
 
 db.startMongo();
 
-eval('t = function(){return "oi"}');
 
 app.get('/', nav.enter);
 app.get('/toSave', nav.toSave);
@@ -29,7 +28,7 @@ app.get('/toLogout', nav.toLogout);
 app.get('/register', nav.register);
 app.get('/battl3/:e', nav.battl3);
 app.get('/manual', nav.manual);
-
+app.get('/hist/:hist', nav.history);
 
 app.post('/toBattl3', nav.toBattl3);
 app.post('/toLogin', nav.toLogin);

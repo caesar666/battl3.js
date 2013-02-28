@@ -2,65 +2,55 @@
 *Author: Cesar Voginski
 *
 *
-*Versions: 1.0-Beta
+*Versions: 1.1-Beta
 *Change log:
-*---
+*Author: Cesar Voginski - Bug fixes (items was a global var for all users @_@)
+*
 *******/
 
 var battleSys = require('./system.js');
 var util = require('util');
 
-var items =
-[
-	{
-		name : 'Cure Potion',
-		quantity: 3,
-		use : function()
-		{	
-			action.ac = 'curePotion'
-		}
-	}
-];
-
-var action = 
+function setupPlayer(player, items, action)
 {
-	ac : '',
-	punch : function(){ action.ac = 'punch';},
-	fire : function(){ action.ac = 'fire';},
-	ice : function(){ action.ac = 'ice';}
-};
+		player.hp = battleSys.calcHp(player.vit);
+		player.mp = battleSys.calcMp(player.wis);
 
-function setupPlayer(player)
-{
-	player.hp = 200+(player.vit*10);
-	player.mp = player.wis*9;
+		player.hpMax = player.hp;
+		player.mpMax = player.mp;
 
-	player.action = action;
-	player.items = items;
+		player.action = action;
+		player.items = pseudoCloneItens(items);
 }
 
-function isBattleEnd(msgReal, msgSysReal, result, players)
+
+function isBattleEnd(result, players)
 {
 	if(players[0].hp <= 0 || players[1].hp <= 0)
 	{
 		if(players[0].hp <= 0 && players[1].hp <= 0)
 		{
-			msgReal.push('Draw Battl3 ...');
+			result.history.add(0, players[0], players[1], 'end', 'Draw Battl3.');
+			
 		}
 		else if(players[0].hp <= 0)
 		{
-			msgReal.push(players[1].name + ' won.');
 			players[1].wins++;
 			players[0].loses++;
+			players[0].hp = 0;
+
+			result.history.add(0, players[0], players[1], 'end', players[1].name + ' won.');
 
 			result.won = players[1].name;
 			result.lose = players[0].name;		
 		}
 		else if(players[1].hp <= 0)
 		{
-			msgReal.push(players[0].name + ' won.');
 			players[0].won++;
 			players[1].loses++;
+			players[1].hp = 0;
+
+			result.history.add(0, players[0], players[1], 'end', players[0].name + ' won.');
 
 			result.won = players[0].name;
 			result.lose = players[1].name;		
@@ -70,24 +60,59 @@ function isBattleEnd(msgReal, msgSysReal, result, players)
 	}
 	return false;
 }
+
 exports.battl3 = function(players)
 {
+	var items =
+	[
+		{
+			name : 'Cure Potion',
+			quantity: 3,
+			code : 'curePotion'
+		}
+	];
+
+	//TODO achar uma forma de criar instancia dessa variavel a cada iteração
+	var action = 
+	{
+		ac : {},
+		punch : function(target){ action.ac.code = 'punch'; action.ac.target = target.index },
+		fire : function(target){ action.ac.code = 'fire'; action.ac.target = target.index },
+		ice : function(target){ action.ac.code = 'ice'; action.ac.target = target.index },
+		use : function(item, target){ action.ac.code = item.code; action.ac.target = target.index }
+	};
+
 	var result = {};
 	var enemyReal;
 	var playerRealResult;
-	var msgReal = new Array();
 	var msgSysReal = new Array();
+	result.history = new Array();
+	result.history.add = function(index, player, enemy, code, msg)
+	{
+			this.push({
+				playerIndex : index,
+				playerHP : player.hp,
+				playerMP : player.mp,
+	
+				enemyHP : enemy.hp,
+				enemyMP : enemy.mp,
+	
+				code : code,
+				msg : msg
+			});
+	}; 
 
 	players.forEach(function(player, index, array)
 	{
-		setupPlayer(player);
+		player.index = index;
+		setupPlayer(player, items, action);
 	});
 
 	while(true)
 	{
 		var endBattle = false;
 
-		endBattle = isBattleEnd(msgReal, msgSysReal, result, players);		
+		endBattle = isBattleEnd(result, players);		
 
 		if(endBattle)
 			break;
@@ -99,55 +124,105 @@ exports.battl3 = function(players)
 				enemyIndex = 1;
 			else
 				enemyIndex = 0;
+			enemyReal = array[enemyIndex];
 
 		
 			var turnErr = '';
 
-			enemyReal = array[enemyIndex];
 			playerRealResult = playerReal;
 			var player = pseudoClone(playerReal);
 			player.action = playerReal.action;
 
 			var enemy = pseudoClone(enemyReal);
-			var msg = duplicate(msgReal);
 			var msgSys = duplicate(msgSysReal);			
 			var self = player;
 
 			try
 			{
-				player.action.ac = '';
+				player.action.ac = {};
 				eval(player.func);
 				var ac = player.action.ac;
 			}catch(err){turnErr = err;}
+			
+			if(!ac)
+				ac  = { code : 'err' };
 		
-			if(turnErr || ac == '' || ac == ' ')
-			{
-				(turnErr != '')
-				console.log('b error: '+turnErr.message+' ---\n '+ turnErr.stack);
-			}
+			var systemFunc = battleSys.system[ac.code];
+			if(!systemFunc)
+				systemFunc = battleSys.system.err;
 
 			try
 			{
-				battleSys.system[ac](playerReal, enemyReal, ac, msgReal, msgSysReal);		
-			}catch(err){}
-
+				systemFunc(playerReal, enemyReal, players, ac, index, msgSysReal, result.history);
+			}
+			catch(err){console.log(err.stack);}
 		});
 	}
 
-	result.msgs = msgReal;
 	result.msgsSys = msgSysReal;
-	result.enemy = enemyReal;
-	result.player = playerRealResult;
+	result.player = players[0];
+	result.enemy = players[1];
+	
+	result.stringify = JSON.stringify(result);
 
 	return result;
+}
+
+exports.getBattleHistory = function (player, enemy, result)
+{
+	var battleHistory = 
+	{
+		useless : 1,
+		playerId : player._id,
+		enemyId : enemy._id,
+		player :
+		{
+			name : player.name
+		},
+		enemy :
+		{
+			name : enemy.name
+		},
+		stringify : result.stringify
+	};
+
+	return battleHistory;
+}
+
+function pseudoCloneItens(itens)
+{
+	var itensClone = new Array();
+	itens.forEach(function(item, index, array){
+		itensClone.push(pseudoCloneItem(item));
+	});
+
+	return itensClone;
+}
+
+function pseudoCloneItem(item)
+{
+	var tempUse = item.use;
+	item.use = '';
+
+	var neoItem = duplicate(item);
+	neoItem.use = tempUse;
+	item.use = tempUse;
+
+	return neoItem;
 }
 
 function pseudoClone(player)
 {
 	var neoPlayer = {};
 
+	neoPlayer.name = player.name;
 	neoPlayer.hp = player.hp;
-	neoPlayer.mp = player.mo;
+	neoPlayer.mp = player.mp;
+
+	neoPlayer.hpMax = player.hp;
+	neoPlayer.mpMax = player.mp;
+
+	neoPlayer.index = player.index;
 	neoPlayer.str = player.str;
 	neoPlayer.vit = player.vit;
 	neoPlayer.wis = player.wis;

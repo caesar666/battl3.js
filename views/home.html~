@@ -1,5 +1,5 @@
 <% include header.html %>
-<body onload="javascript: reCalc('str','vit','wis','points');logoutForm();">
+<body onload="javascript: reCalc('str','vit','wis','points'); onloadHome();">
 	<% include bar.html %>
 	<form action="/toSave" id="home">
 		<div id="manual" title="Game Manual" >
@@ -40,7 +40,8 @@
 					<textarea id="func" name="func" rows="20" cols="40"><%= account.func %></textarea> <br />
 
 					<label>My Battl3 URL(Share to people battl3 you!): </label> <br />
-					<label style="color: blue;">localhost:8081/battl3/<%= account._id %>
+					<input id="idhidden" type="hidden" value='<%= account._id %>' />
+					<label style="color: blue;" id="url" onclick="javascript: selectMyself(this);"></label>
 			</div>
 		</div>
 		<div style="float: left; margin-left: 20px;">

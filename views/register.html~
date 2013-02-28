@@ -1,30 +1,39 @@
 <% include header.html %>
 
 	<% include bar.html %>
-	<div id="container">
-		<form action="toRegister" method="POST">
+	<body onload="javascript: onloadRegiter();">
+		<div id="container">
+			<form action="toRegister" method="POST" id="registerForm">
 
-			<label for="name">User</label>
-			<input type="name" name="user">
+				<label for="name">User *</label>
+				<input type="name" name="user" id="user">
 
-			<label for="email">Email</label>
-			<input type="name" name="email">
+				<label class="error" id="error_user"></label><br/>
 
-			<label for="username">Password</label>
-			<input type="password" name="password">
+				<label for="email">Email</label>
+				<input type="name" name="email" id="email">
 
-			<label for="username">Re-Password</label>
-			<input type="password" name="repassword">
+				<label for="username" >Password *</label>
+				<input type="password" name="password" id="password">
 
-			<a href="/">Cancelar</a>
+				<label for="username">Re-Password *</label>
+				<input type="password" name="repassword" id="repassword">
 
-			<div id="lower">
-				<input type="submit" value="Register">
+				<label class="error" id="error_pass" style="display: none;"> Passwords don't match.</label>
 
+				<a href="/">Cancel</a>
+
+				<div id="lower">
+					<input type="submit" value="Register" onclick="checkRegister()">
+				</div>
+			</form>
+		</div>
+		<% if(dialog) {%>
+			<div id=dialog" title="<%= dialog.title %>" class="dialog">
+				<p><%= dialog.msg %></p>
 			</div>
-		</form>
-	</div>
-
+		<% } %>
+	</body>
 
 <% include footer.html %>
 

@@ -24,7 +24,7 @@ function reCalc(strId,vitId,wisId,pointsId)
 		pointsField.style.color = "red";
 }
 
-function logoutForm()
+function onloadHome()
 {
 	get('logout').onclick = function()
 	{
@@ -34,7 +34,12 @@ function logoutForm()
 	};
 
 	$(".dialog").dialog({modal : true, show : "blind", hide : "blind"});	
-	$("#manual").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", height:'auto', width:'100%' });
+	$("#manual").dialog({autoOpen : false, modal : true, show : "blind", hide : "blind", height:'auto', width:'auto' });
+
+	var url = 'http://'+window.location.href.split('/')[2]+'/battl3/';
+	var id = $('#idhidden').val();
+
+	$('#url').html(url + id);
 }
 
 var submitVar;
@@ -110,10 +115,142 @@ function manualOpen()
 	});	
 }
 
-function loadResult()
+function onloadRegiter()
 {
-	
+	$(".dialog").dialog({modal : true, show : "blind", hide : "blind"});	
+
+	$('#registerForm').submit(function(){
+
+		var user = $('#user').val();
+		var password = $('#password').val();
+		var repassword = $('#repassword').val();
+
+		var required = 'This field is required.';
+		var sendRequest = false;
+
+		if(!user || user == '')
+		{
+			$('#error_user').html(required);
+			cancelRequest = true;
+		}
+
+		if(password != repassword)
+		{
+			$('#error_pass').html('Passwords dont match.');
+			$('#error_pass').css('display','');
+
+			cancelRequest = true;
+		}
+
+		if(!password || !repassword)
+		{
+			$('#error_pass').html(required);
+			$('#error_pass').css('display','');
+
+			cancelRequest = true;
+		}
+		return !cancelRequest;
+	});
 }
 
+function checkRegister()
+{
+	$('#error_pass').html('');
+	$('#error_user').html('');
+}
+
+function loadResult(result)
+{
+	divArray = new Array();
+	result.player.hpCurrent = result.player.hpMax;
+	result.enemy.hpCurrent = result.enemy.hpMax;
+
+	result.msgs.forEach(function(msg, index){
+
+		var divLine = $('div');
+		var style = 'divLine' + result.msmgsSys[index] ? (result.msmgsSys[index].actor.index + 1) : 3; 
+		var title = result.msmgsSys[index] ? result.msmgsSys[index].result : ' ';
+
+		divLine.attr('class', style);
+		divLine.attr('title', title);
+
+		if(result.msgsSys[index])
+		{
+			var divImg = $('div');
+			divImg.attr('class', 'imgdiv');
+			var img = $('img');
+			var src = '/imgs/icons/' + result.msgsSys[index].action + '.png';
+			img.attr('src',src);
+			//TODO adicionar img na div
+		}else
+		{
+			var divImg = $('div');
+			divImg.attr('width','32px');
+			divImg.attr('float', 'left');
+		}
+		
+		//TODO adicionar divImg no divLine
+
+		var divMsg = $('div');
+		divMsg.text(msg);
+
+		//TODO adicionar divMsg no divLine
+
+		var divHeigth = $('div').css('heigth':'40px');		
+		//TODO adicionar divHeigth no divLine
+
+		divArray.push(divLine);		
+
+		result.hp0 = $('#hp0');
+		result.mp0 = $('#mp0');
+
+		result.hp1 = $('#hp1');
+		result.mp1 = $('#mp1');
+
+	});
+}
+
+
+function battle(divs, result, count)
+{
+	var actor = result.msgsSys[count].actor.index;
+
+	if(result.count)
+		result.count++;
+	else
+		result.count = 0;
+
+	var div = divs[count];
+
+	var damage = getDamage(result.msgsSys[count].result);
+	var target = result.msgsSys[count].action.target;
+
+	var hpBar = 'hp'+target;
+	var width = result[hpBar].css('width');
+	
+	result.player.hpCurrent -= damage;
+
+	(result.player.hp * 100) / result.player.hpMax
+
+	
+
+		
+}
+
+function getDamage(damage)
+{
+	if(!damage)
+		return 0;
+
+	firstChar = damage.charAt(0);
+	var damage;
+
+	if( firstChar == '-' )
+		damage = - (parteInt(damage))
+	else
+		damage = (parteInt(damage))	
+
+	return damage;
+}
 
 

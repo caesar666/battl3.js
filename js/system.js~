@@ -9,72 +9,87 @@
 var u = require('util');
 exports.system = 
 {
-	err : function (player, enemy, action, msg, msgSys)
+	err : function (player, enemy, players, action, index, msgSys)
 	{
-		msg.push(player.name+' function has done something wrong O.o');
-		msgSys.push({action: 'Error', result : player.name+' function has done something wrong O.o'});
+		result.history.add(index, player, enemy, 'err', 'function has done something wrong O.o');
+		msgSys.push({action: 'Error', result : player.name+' function has done something wrong O.o', actor : player});
 	},
 
-	punch : function (player, enemy, action, msg, msgSys)
+	punch : function (player, enemy, players, action, index, msgSys)
 	{
+		enemy = getTarget(players, action.target);
+
 		var damage = player.str ;
-		enemy.hp -= damage;
+		enemy.set('hp',-damage, history);
 		
-		msgSys.push({action : action, result : damage});
+		msgSys.push({action : action, result : '-'+damage, actor : player});
+		result.history.add(index, player, enemy, action.code, 'function has done something wrong O.o');
 		msg.push(player.name + ' punched '+enemy.name+' in the face.');
 	},
 
-	fire : function (player, enemy, action, msg, msgSys)
-	{
+	fire : function (player, enemy, players, action, index, msgSys)
+	{	
+		enemy = getTarget(players, action.target);
+
 		if(player.mp < 18)
 		{
-			msgSys.push({action : action, result : 'spell fail'});
+			msgSys.push({action : action, result : 'spell fail', actor : player});
 			msg.push(player.name + ' failed to cast.');
+			history.push('');
 		}
 		var damage = player.wis*3; 
 
-		msgSys.push({action : action, result : damage });
+		msgSys.push({action : action, result : '-' + damage, actor : player });
 		msg.push(player.name + ' burned ' + enemy.name +'.');
 		
-		enemy.hp -= damage;
+		enemy.set('hp', -damage, history);
 	},
 
-	ice : function (player, enemy, action, msg, msgSys)
+	ice : function (player, enemy, players, action, index, msgSys)
 	{
+		enemy = getTarget(players, action.target);
 		if(player.mp < 10)
 		{
-			msgSys.push({action : action, result : 'spell fail'});
+			msgSys.push({action : action, result : 'spell fail', actor : player});
 			msg.push(player.name + ' failed to cast.');
+			history.push('');
 		}
 		var damage = player.wis * 0.7; 	
 
-		msgSys.push({action : action, result : damage});
+		msgSys.push({action : action, result : '-'+damage, actor : player});
 		msg.push(player.name + ' freezes '+enemy.name+' so much.');
 
-		enemy.hp -= damage;
+		enemy.hp('hp',damage, history);
 		enemy.str -= enemy.str * 0.1;
+
 	},
 	
-	curePotion : function (player, enemy, action, msg, msgSys)
+	curePotion : function (player, enemy, players, action, index, msgSys)
 	{
+		target = getTarget(players, action.target);
+
 		var items = player.items.filter(function(item, index, array){
 			return (item.name == 'Cure Potion' && item.quantity > 0);
 		});
 
 		if(items && items[0])
 		{
-			console.log('ccccccccccccccccccccccc');
-			player.hp += 15;
+			target.set('hp',damage, history);
 			items[0].quantity --;
 
-			msgSys.push({action : action, result : 15});
-			msg.push(player.name + ' used Cure Potion.');
+			msgSys.push({action : action, result : '+'+15, actor : player});
+			msg.push(player.name + ' used Cure Potion in ' + target.name + '.');
 		}
 		else
 		{
-			console.log('aaaaaaaaaaaaaaaaaaaa');
-			msgSys.push({action : action, result : 0});
+			msgSys.push({action : action, result : 0, actor : player});
 			msg.push(player.name + ' is out of Cure Potion.');
+			history.push('');
 		}
 	}
 };
+
+function getTarget(players, index)
+{
+	return players[index];	
+}

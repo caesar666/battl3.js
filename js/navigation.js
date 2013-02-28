@@ -26,11 +26,15 @@ exports.enter = function(req, res)
 				res.cookie('user', account.user);
 				res.cookie('pass', account.pass);
 
-				res.render('home',
-				{
-				  	pageTitle: 	'Battl3.js - Home',
-					account: account,
-					dialog: undefined
+				loadBattlesForHome(account._id, function(battles) {
+					res.render('home',
+					{
+					  	pageTitle: 	'Battl3.js - Home',
+						account: account,
+						dialog: undefined,
+						myBattles: battles[0],
+						worldBattles: battles[1]
+					});
 				});
 			},
 			function(err)
@@ -74,12 +78,17 @@ exports.toSave = function(req, res)
 
 			if((str + vit + wis) > 30)
 			{
-				res.render('home',
-				{
-				  	pageTitle: 	'Battl3.js - Home',
-					account: account,
-					dialog : {title : 'Status is incorrect', msg : 'The sum of the status must be 30.'}
+					loadBattlesForHome(account._id, function(battles){
+					res.render('home',
+					{
+					  	pageTitle: 	'Battl3.js - Home',
+						account: account,
+						dialog : {title : 'Status is incorrect', msg : 'The sum of the status must be 30.'},
+						myBattles : battles[0],
+						worldBattles : battles[1]
+					});
 				});
+				
 				return;
 			}
 
@@ -89,23 +98,32 @@ exports.toSave = function(req, res)
 
 				if(account)
 				{
-					res.render('home',
-					{
-					  	pageTitle: 	'Battl3.js - Home',
-						account: account,
-						dialog : {title : 'Name is already in use', msg : 'Choose another name pls.'}
+					loadBattlesForHome(account._id, function(battles){
+						res.render('home',
+						{
+						  	pageTitle: 	'Battl3.js - Home',
+							account: account,
+							dialog : {title : 'Name is already in use', msg : 'Choose another name pls.'},
+							myBattles : battles[0],
+							worldBattles : battles[1]
+						});
 					});
+					
 					return;
 				}
 				else
 				{
 					db.accountSave(accountUpdate);
-
-					res.render('home',
-					{
-					  	pageTitle: 	'Battl3.js - Home',
-						account: accountUpdate,
-						dialog: {title : 'OK', msg: 'Your data has been saved.'}
+					
+					loadBattlesForHome(accountUpdate._id, function(battles){
+						res.render('home',
+						{
+						  	pageTitle: 	'Battl3.js - Home',
+							account: accountUpdate,
+							dialog: {title : 'OK', msg: 'Your data has been saved.'},
+							myBattles : battles[0],
+							worldBattles : battles[1]
+						});
 					});
 				}
 			});
@@ -123,12 +141,16 @@ exports.toLogin = function(req, res)
 		res.cookie('user', account.user);
 		res.cookie('pass', account.pass);
 
-		res.render('home',
-		{
-		  	pageTitle: 	'Battl3.js - Home',
-			account: account,
-			dialog: undefined
-		});
+		loadBattlesForHome(account._id, function(battles){
+			res.render('home',
+			{
+			  	pageTitle: 	'Battl3.js - Home',
+				account: account,
+				dialog: undefined,
+				myBattles : battles[0],
+				worldBattles : battles[1]
+			});
+		})
 	},
 	function(err)
 	{
@@ -146,26 +168,44 @@ exports.toRegister = function(req, res)
 	var repassword = req.param('repassword');
 	var email = req.param('email').toLowerCase();
 
-	var account = 
+
+	var saveOrError = function(exists)
 	{
-		user: user,
-		pass: password,
-		email : email,
-		name : '',
-		str : 0,
-		vit : 0,
-		wis : 0,
-		func : 'function action(self, enemy, msg){ return self.action.punch(); }'
+		if(exists)
+		{
+			res.render('register',
+			{
+			  	pageTitle: 	'Battl3.js - Home',
+				account : account,
+				dialog : {title: 'User is already in use', msg: 'This user is already in use. \n Please choose another one.'}
+			});
+
+			return;
+		}
+
+		var account = 
+		{
+			user: user,
+			pass: password,
+			email : email,
+			name : '',
+			str : 0,
+			vit : 0,
+			wis : 0,
+			func : 'function action(self, enemy, msg){ return self.action.punch(); }'
+		};
+
+		db.accountSave(account);
+
+		res.render('home',
+		{
+		  	pageTitle: 	'Battl3.js - Home',
+			account : account,
+			dialog : undefined
+		});
 	};
 
-	db.accountSave(account);
-
-	res.render('home',
-	{
-	  	pageTitle: 	'Battl3.js - Home',
-		account : account,
-		dialog : undefined
-	});
+	db.checkUser(user, saveOrError);
 }
 
 exports.toLogout = function(req, res)
@@ -183,7 +223,8 @@ exports.register = function(req, res)
 {
 	res.render('register',
 	{
-	  	pageTitle: 	'Battl3.js - Register'
+	  	pageTitle: 	'Battl3.js - Register',
+		dialog: undefined
 	});
 }
 
@@ -203,7 +244,6 @@ exports.toBattl3 = function(req, res)
 			
 			db.findAccount(enemyId, function(account2)
 			{
-					
 				enemy = account2;
 
 				var players = new Array();
@@ -212,8 +252,12 @@ exports.toBattl3 = function(req, res)
 				players.push(enemy);
 
 				var result = main.battl3(players);
-
-				res.render('result', {pageTitle:'Battl3.js - Result', result : result})
+				var battleHistory = main.getBattleHistory(self, enemy, result);
+				
+				db.historySave(battleHistory);
+				result._id = battleHistory._id;
+				
+				res.render('result', { pageTitle:'Battl3.js - Result', result : result });
 			},
 			function(err)
 			{
@@ -226,6 +270,16 @@ exports.toBattl3 = function(req, res)
 		});
 	}	
 }
+
+exports.history = function(req, res)
+{
+	var historyId = req.params.hist;
+
+	db.findHistoryById(historyId, function(history){
+		res.render('result', { pageTitle:'Battl3.js - History', result : history });
+	});
+}
+
 exports.battl3 = function(req, res)
 {
 	var enemyId = req.params.e;
@@ -286,3 +340,13 @@ function checkLogged(request, response)
 	return true;
 }
 
+function loadBattlesForHome(playerId, callback)
+{
+	var battles = new Array();
+	db.loadBattles(playerId, function(myBattles, worldBattles){
+		battles[0] = myBattles;
+		battles[1] = worldBattles;
+		
+		callback(battles);
+	});
+}

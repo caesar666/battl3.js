@@ -71,6 +71,15 @@ html, body {
 	box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
 }
 
+.containerSide {
+	float:left;
+	padding-left: 30px;
+	background: #fff;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
+}
+
 
 form {
 	margin: 0 auto;
@@ -271,4 +280,90 @@ input[type=submit]:active {
 .error{
 	color:red;
 }
+
+.imgdiv {
+	border-right: 1px solid #000000;
+	background-color: #ffffff;
+	float:left;
+}
+
+.divLine1{
+	border: 1px solid #000000;
+	float:left;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#acd6ef), to(#6ec2e8));
+	background-image: -moz-linear-gradient(top left 90deg, #acd6ef 0%, #6ec2e8 100%);
+	background-image: linear-gradient(top left 90deg, #acd6ef 0%, #6ec2e8 100%);
+	height:32px;
+	width: 45%;
+	display: table;
+}
+
+.divLine2{
+	float: right;
+	border: 1px solid #000000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#ffaaaa), to(#aa0000));
+	background-image: -moz-linear-gradient(top left 90deg, #ffffff 0%, #ff0000 100%);
+	background-image: linear-gradient(top left 90deg, #ffffff 0%, #0000ff 100%);
+	height:32px;
+	width: 45%;
+	display: table;
+}
+
+.hpBar{
+	background-color: #ff0000;
+}
+
+.mpBar{
+	background-color: #0000ff;
+}
+
+.donation {
+	top:50%;
+	float:right;
+}
+
+.donationLogin {
+	top:80%;
+	float:right;
+	position: relative;
+}
+
+.balloon {
+	background: #ccc;
+
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+
+	
+	position: absolute;
+	top: 65%;
+	left: 73%;
+	padding: 20px;
+	font-size: 12px;
+	width: 300px;
+	height: 90px;
+	text-align: justify;
+	color: #3a3a3a;
+}
+
+.balloon .arrow {
+	border-color: #CCCCCC transparent  transparent transparent;
+    border-style: solid;
+    border-width: 10px;
+    display: block;
+    height: 0;
+    position: relative;
+    top: 110px;
+    left: 280px;
+    width: 0;
+}
+
+
+
+
+
+
+
+
 

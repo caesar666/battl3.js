@@ -15,7 +15,7 @@ exports.startMongo = function()
 {
 	mongojs = require('mongojs');
 	var databaseUrl = "localhost/battle"; // "username:password@example.com/mydb"
-	var collections = ["accounts"]
+	var collections = ["accounts","history"]
 	db = mongojs.connect(databaseUrl, collections);
 }
 
@@ -81,5 +81,78 @@ exports.accountSave = function(account)
 {
 	db.accounts.save(account);
 }
+
+exports.historySave = function(history)
+{
+	db.history.save(history);
+}
+
+function findHistory(id, callback)
+{
+	var query = 
+	{
+		$or :
+		[
+			{
+				playerId : id
+			},
+			{
+				enemyId : id
+			}
+		]
+	};
+
+	db.history.find( query, { limit : 5 },
+		function(err, historys)
+		{
+			callback(historys);
+		}
+	);
+	
+}
+
+exports.findHistoryById = function(id, callback)
+{
+	db.history.findOne( { _id: db.ObjectId(id) },
+		function(err, history)
+		{
+			callback(history);
+		}
+	);
+	
+}
+
+exports.checkUser = function(user, callback)
+{
+	var r = db.accounts.findOne(
+		{
+			user: user
+		},
+		function(err, account)
+		{
+			callback(account != undefined);
+		}
+	);
+}
+
+exports.loadBattles = function(playerId, callback)
+{
+	var myBattles, worldBattles;
+	
+	findHistory(playerId, function(historys){
+		myBattles = historys;
+		
+		db.history.find({ useless : 1 }, { limit : 5 },function(err, worldHistorys){
+			worldBattles = worldHistorys;
+			if(!worldBattles)
+				worldBattles = undefined;
+			callback(myBattles, worldBattles);
+		});
+	});
+}
+
+
+
+
 
 

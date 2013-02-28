@@ -1,3 +1,12 @@
+/*******
+*Author: Cesar Voginski
+*
+*
+*Versions: 1.0-Beta
+*Change log:
+*---
+*******/
+
 mongojs = undefined;
 ObjectId = undefined;
 db = undefined;
@@ -73,4 +82,18 @@ exports.accountSave = function(account)
 	db.accounts.save(account);
 }
 
+exports.checkUser = function(user, callback)
+{
 
+	var r = db.accounts.findOne(
+		{
+			user: user
+		},
+		function(err, account)
+		{
+			callback(account != undefined);
+		}
+	);
+
+	return exists;	
+}
