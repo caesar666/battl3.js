@@ -26,16 +26,7 @@ exports.enter = function(req, res)
 				res.cookie('user', account.user);
 				res.cookie('pass', account.pass);
 
-				loadBattlesForHome(account._id, function(battles) {
-					res.render('home',
-					{
-					  	pageTitle: 	'Battl3.js - Home',
-						account: account,
-						dialog: undefined,
-						myBattles: battles[0],
-						worldBattles: battles[1]
-					});
-				});
+				renderHome(account, undefined, res);
 			},
 			function(err)
 			{
@@ -75,57 +66,36 @@ exports.toSave = function(req, res)
 			account.wis = wis;
 			account.func = func;
 			accountUpdate = account;
-
-			if((str + vit + wis) > 30)
-			{
-					loadBattlesForHome(account._id, function(battles){
-					res.render('home',
-					{
-					  	pageTitle: 	'Battl3.js - Home',
-						account: account,
-						dialog : {title : 'Status is incorrect', msg : 'The sum of the status must be 30.'},
-						myBattles : battles[0],
-						worldBattles : battles[1]
-					});
-				});
+			
+			validateAlgorithm(account.func, function(stop){
 				
-				return;
-			}
-
-			db.checkName(account.name, function(account){
-				if(account.name == accountUpdate.name)
-					account = undefined;
-
-				if(account)
+				if(stop == true || isNaN(str) || isNaN(vit) || isNaN(wis) || (str + vit + wis) > 30 ||
+				 str < 0 || vit < 0 || wis < 0)
 				{
-					loadBattlesForHome(account._id, function(battles){
-						res.render('home',
-						{
-						  	pageTitle: 	'Battl3.js - Home',
-							account: account,
-							dialog : {title : 'Name is already in use', msg : 'Choose another name pls.'},
-							myBattles : battles[0],
-							worldBattles : battles[1]
-						});
-					});
-					
+					var dialog = {title : 'Status is incorrect', msg : 'The sum of the status must be 30. And the algorithm must not have the word "Real" '};
+					renderHome(account, dialog, res);
 					return;
 				}
-				else
-				{
-					db.accountSave(accountUpdate);
-					
-					loadBattlesForHome(accountUpdate._id, function(battles){
-						res.render('home',
-						{
-						  	pageTitle: 	'Battl3.js - Home',
-							account: accountUpdate,
-							dialog: {title : 'OK', msg: 'Your data has been saved.'},
-							myBattles : battles[0],
-							worldBattles : battles[1]
-						});
-					});
-				}
+
+				db.checkName(account.name, function(account){
+					if(!account || account.name == accountUpdate.name)
+						account = undefined;
+	
+					if(account)
+					{
+						var dialog = {title : 'Name is already in use', msg : 'Choose another name pls.'};
+						renderHome(account, dialog, res);
+						
+						return;
+					}
+					else
+					{
+						db.accountSave(accountUpdate);
+						
+						var dialog = {title : 'OK', msg: 'Your data has been saved.'};
+						renderHome(accountUpdate, dialog, res);
+					}
+				});
 			});
 		});
 	}
@@ -141,23 +111,14 @@ exports.toLogin = function(req, res)
 		res.cookie('user', account.user);
 		res.cookie('pass', account.pass);
 
-		loadBattlesForHome(account._id, function(battles){
-			res.render('home',
-			{
-			  	pageTitle: 	'Battl3.js - Home',
-				account: account,
-				dialog: undefined,
-				myBattles : battles[0],
-				worldBattles : battles[1]
-			});
-		})
+		renderHome(account, undefined, res);
 	},
 	function(err)
 	{
 		res.clearCookie('user');
 		res.clearCookie('pass');
 
-		res.render('login',{ pageTitle: 	'Battl3.js - Login', error:'User or Password invalid .' });
+		res.render('login', { pageTitle: 'Battl3.js - Login', error:'User or Password invalid .' });
 	});
 }
 
@@ -188,21 +149,19 @@ exports.toRegister = function(req, res)
 			user: user,
 			pass: password,
 			email : email,
-			name : '',
+			name : 'nameless(' + new Date().getTime() + ')',
 			str : 0,
 			vit : 0,
 			wis : 0,
-			func : 'function action(self, enemy, msg){ return self.action.punch(); }'
+			func : 'self.action.punch(enemy); //this is a example, pls improve'
 		};
 
 		db.accountSave(account);
 
-		res.render('home',
-		{
-		  	pageTitle: 	'Battl3.js - Home',
-			account : account,
-			dialog : undefined
-		});
+		res.cookie('user', account.user);
+		res.cookie('pass', account.pass);
+
+		renderHome(account, undefined, res);
 	};
 
 	db.checkUser(user, saveOrError);
@@ -349,4 +308,40 @@ function loadBattlesForHome(playerId, callback)
 		
 		callback(battles);
 	});
+}
+
+function renderHome(account, dialog, res)
+{
+	loadBattlesForHome(account._id, function(battles){
+		res.render('home',
+		{
+		  	pageTitle: 	'Battl3.js - Home - Beta',
+			account: account,
+			dialog : dialog,
+			myBattles : battles[0],
+			worldBattles : battles[1]
+		});
+	});
+}
+
+function validateAlgorithm(algorithm, callback)
+{
+	var blackList = 
+	[
+		'Real', 'while','for', 'Console', 'exit', 'stop', 'node', 'ssh'
+	];
+	
+	var containBlackWord = false;
+	for(i=0; i < blackList.length; i++)
+	{
+		item = blackList[i];
+		if(algorithm.search(item) != -1)
+		{
+			callback(true);
+			containBlackWord = true;
+		}
+	}
+	
+	if(containBlackWord != true)
+		callback(false);
 }

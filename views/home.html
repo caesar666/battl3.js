@@ -48,7 +48,7 @@
 					Your lasts battl3s
 				</div>
 				<% for(var i=0; i < myBattles.length; i++) { var battle = myBattles[i]; %>
-					<div style="margin-top: 20px;">
+					<div style="margin-top: 20px; float:left; position: absolute;">
 						<a href="/hist/<%= battle._id %>">Watch > <%= battle.player.name %> VS. <%= battle.enemy.name %></a>
 					</div>
 				<% } %>
@@ -56,9 +56,9 @@
 					<br/>Lasts World battl3s
 				</div>
 				<% if(worldBattles) for(var i=0; i < worldBattles.length; i++) { var battle = worldBattles[i]; %>
-					<div style="margin-top: 20px;">
+					<div style="margin-top: 20px;float:left; position: relative;">
 						<a href="/hist/<%= battle._id %>">Watch > <%= battle.player.name %> VS. <%= battle.enemy.name %></a>
-					</div>
+					</div><br/>
 				<% } %>
 			</div>
 		</div>
@@ -87,9 +87,9 @@
 	<div class="balloon">
 		<div class="arrow"></div>
 		<label style="color:blue;">Make your donation!</label><br/><br/>
-		If we ARRECADAR 100 BRL, I'll implement <br/>
+		If we obtain 100 BRL, I'll implement <br/>
 			3 new items;<br/>
-			3 classes (warrior, wizard, thief);<br/>
+			3 new classes (warrior, wizard, thief);<br/>
 			implement equipament feature;<br/>
 			<br/>
 	</div>

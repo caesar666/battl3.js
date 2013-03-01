@@ -183,6 +183,7 @@ exports.getBattleHistory = function (player, enemy, result)
 		{
 			name : enemy.name
 		},
+		date: new Date(),
 		stringify : result.stringify
 	};
 

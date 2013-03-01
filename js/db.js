@@ -142,12 +142,13 @@ exports.loadBattles = function(playerId, callback)
 	findHistory(playerId, function(historys){
 		myBattles = historys;
 		
-		db.history.find({ useless : 1 }, { limit : 5 },function(err, worldHistorys){
-			worldBattles = worldHistorys;
-			if(!worldBattles)
-				worldBattles = undefined;
-			callback(myBattles, worldBattles);
-		});
+		db.history.find(
+			{ useless : 1 },{ sort: [['date','desc'], ['useless','asc']], limit:5}, function(err, worldHistorys){
+				worldBattles = worldHistorys;
+				if(!worldBattles)
+					worldBattles = undefined;
+				callback(myBattles, worldBattles);
+			});
 	});
 }
 

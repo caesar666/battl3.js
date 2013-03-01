@@ -128,7 +128,7 @@ function calcFire(wis)
 
 function calcFireCoast()
 {
-	return 18;
+	return 30;
 }
 
 function calcIce(wis)
@@ -138,7 +138,7 @@ function calcIce(wis)
 
 function calcIceCoast()
 {
-	return 10;
+	return 15;
 }
 
 function calcCurePotion()
